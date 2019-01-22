@@ -10,7 +10,7 @@ setup(
     url='https://github.com/AhmedHanafy725/junit2html_plugin',
     install_requires=['jinja2'],
     # packages=['junit2html'],
-    package_data = {'junit2html': ['template.html']},
+    package_data = ['template.html'],
     include_package_data=True,
     entry_points = {
         'nose.plugins.0.10': ['junit2html = junit2html:Junit2Html']
