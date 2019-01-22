@@ -12,68 +12,56 @@ class Junit2Html(Plugin):
         super(Junit2Html, self).__init__()
         self._envrionment = jinja2.Environment()
         self._load_template()
+        self.encode = 'UTF-8'
 
     def options(self, parser, env=os.environ):
         Plugin.options(self, parser, env)
         parser.add_option(
-            '--html-testsuite-name', action='store',
-            dest='testsuite_name', metavar="PACKAGE",
+            '--html-testsuite-name',
+            action='store',
+            dest='html_testsuite_name',
+            metavar="PACKAGE",
             default=env.get('NOSE_TESTSUITE_NAME', 'Nosetests'),
             help=("Name of the testsuite."
                   "Default testsuite name is Nosetests."))
         
         parser.add_option(
-            '--html-file', action='store',
-            dest='html_file', metavar="FILE",
+            '--html-file',
+            action='store',
+            dest='html_file',
+            metavar="FILE",
             default=env.get('NOSE_HTML_FILE', 'nosetests.html'),
             help=("html file to store the report in."
-                  "Default is nosetests.html in."))
+                  "Default is nosetests.html."))
 
     def configure(self, options, config):
         Plugin.configure(self, options, config)
-        config.options.noSkip = True
         if self.enabled:
+            config.options.noSkip = True
             self.result = dict(summary={}, testcases=[])
             self.result['summary'] = {'errors': 0,
                                       'failures': 0,
                                       'passed': 0,
                                       'skip': 0
-                                    }
-            self.errorlist = []
-            self.testsuite_name = options.testsuite_name
+                                     }
+            self.testsuite_name = options.html_testsuite_name
             self.output_file = options.html_file
 
     def beforeTest(self, test):
+        """Start timer to calculate test duration
+        """
         self.start_time = time.time()
 
-    def report(self, stream):
-        """Writes an Xunit-formatted XML file
-
-        The file includes a report of test errors and failures.
-
-        """
-        
-        self.result['summary']['name'] = self.testsuite_name
-        self.result['summary']['tests'] = self.result['summary']['errors'] + \
-                                          self.result['summary']['failures'] + \
-                                          self.result['summary']['passed'] + \
-                                          self.result['summary']['skip']
-        html = self._generate_html(self.result)
-        self._export_html(html, self.output_file)
-        stream.writeln('-' * 70)
-        stream.writeln('html generated at {}/{}'.format(os.path.abspath('.'), self.output_file))
-
     def addError(self, test, err):
-        """Add error output to Xunit report.
+        """Add error to the report.
         """
-        taken = self.timeTaken()
-        time_taken = '{0:.5f}'.format(taken)
+        time_taken = self.time_taken()
         result = dict()
-        trace_back = format_exception(err, 'UTF-8')
+        trace_back = format_exception(err, self.encode)
         if (err[0].__name__ == 'SkipTest'):
             self.result['summary']['skip'] += 1
             result['status'] = 'skipped'
-            trace_back = trace_back.strip('Exceptions: ')
+            trace_back = trace_back.replace('Exception', 'SkipTest')
         else:
             self.result['summary']['errors'] += 1
             result['status'] = 'errored'
@@ -84,13 +72,12 @@ class Junit2Html(Plugin):
         self.result['testcases'].append(result)
 
     def addFailure(self, test, err, capt=None, tb_info=None):
-        """Add failure output to Xunit report.
+        """Add failure to the report.
         """
-        taken = self.timeTaken()
-        time_taken = '{0:.5f}'.format(taken)
+        time_taken = self.time_taken()
+        self.result['summary']['failures'] += 1
         result = dict()
         trace_back = format_exception(err, 'UTF-8')
-        self.result['summary']['failures'] += 1
         result['time'] = time_taken
         result['id'] = test.id()
         result['details'] = {'message': trace_back}
@@ -98,24 +85,35 @@ class Junit2Html(Plugin):
         self.result['testcases'].append(result)
 
     def addSuccess(self, test, capt=None):
-        """Add success output to Xunit report.
+        """Add success to the report.
         """
-        taken = self.timeTaken()
-        time_taken = '{0:.5f}'.format(taken)
-        result = dict()
+        time_taken = self.time_taken()
         self.result['summary']['passed'] += 1
+        result = dict()
         result['time'] = time_taken
         result['id'] = test.id()
         result['status'] = 'Passed'
         self.result['testcases'].append(result)
-    
-    def addSkip(self, test):
-        import ipdb; ipdb.set_trace()
-        self.result['summary']['skipped'] += 1
 
-    def timeTaken(self):
-        taken = time.time() - self.start_time
-        return taken
+    def time_taken(self):
+        diff_time = time.time() - self.start_time
+        time_taken = '{0:.5f}'.format(diff_time)
+        return time_taken
+
+    def report(self, stream):
+        """Generate a HTML file
+        This file includes a report of test result.
+        """
+        
+        self.result['summary']['name'] = self.testsuite_name
+        self.result['summary']['tests'] = self.result['summary']['errors'] + \
+                                          self.result['summary']['failures'] + \
+                                          self.result['summary']['passed'] + \
+                                          self.result['summary']['skip']
+        html = self._generate_html(self.result)
+        self._export_html(html, self.output_file)
+        stream.writeln('-' * 70)
+        stream.writeln('html file has been generated in {}/{}'.format(os.path.abspath('.'), self.output_file))
 
     def _generate_html(self, result):
         template = self._envrionment.from_string(self._template)
