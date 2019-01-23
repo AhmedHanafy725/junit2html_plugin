@@ -1,5 +1,5 @@
 ## junit2html plugin
-This is a plugin to nosetests
+This is a plugin to nosetests. convert nosetests report to html
 
 ### Usage:
 `--with-html` used to enable the plugin.
@@ -11,4 +11,6 @@ This is a plugin to nosetests
 ```bash
 nosetests --with-html --html-testsuite-name="Just Try" --html-file="Try.html" /your/path
 ```
+### Screenshots:
+![image](/images/try.png)
 

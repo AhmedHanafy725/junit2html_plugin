@@ -1,5 +1,5 @@
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='junit2html',
@@ -9,10 +9,11 @@ setup(
     author_email='ahmed.hanafy725@gmail.com',
     url='https://github.com/AhmedHanafy725/junit2html_plugin',
     install_requires=['jinja2'],
-    # packages=['junit2html'],
+    packages=find_packages(),
+    py_modules=['junit2html.py'],
     # package_data = {'junit2html': ['template.html']},
-    include_package_data=True,
+    # include_package_data=True,
     entry_points = {
-        'nose.plugins.0.10': ['junit2html = junit2html:Junit2Html']
+        'nose.plugins.0.10': ['junit2html=junit2html:Junit2Html']
         },
     )
