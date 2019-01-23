@@ -58,7 +58,7 @@
             <div class="ui basic segment" style="padding-top:0px; !important">
                 <div class="ui styled fluid accordion" style="box-shadow:none;">
                     {% for testcase in testcases %}
-                        <div id="{{testcase.name}}" name="testcase" status="{{testcase.status}}">
+                        <div id="{{testcase.id}}" name="testcase" status="{{testcase.status}}">
                             <div class="title">
                                 <i class="{{testcase.status}} icon"></i> {{testcase.id}}
                             </div>
