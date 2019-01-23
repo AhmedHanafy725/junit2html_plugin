@@ -4,9 +4,9 @@ from setuptools import setup
 setup(
     name='junit2html',
     version='0.1',
-    description='Generate html file from junit reports',
-    author='Ahmed El-Sayed',
-    author_email='ahmed.m.elsayed93@gmail.com',
+    description='Generate html file for nosetests report',
+    author='Ahmed Hanafy',
+    author_email='ahmed.hanafy725@gmail.com',
     url='https://github.com/AhmedHanafy725/junit2html_plugin',
     install_requires=['jinja2'],
     # packages=['junit2html'],
