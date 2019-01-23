@@ -1,8 +1,8 @@
-## junit2html_plugin
+## junit2html plugin
 This is a plugin to nosetests
 
 ### Usage:
-`--with-html` is used to enable the plugin.
+`--with-html` used to enable the plugin.
 
 `--html-testsuite-name` used for testsuite name would display in html. (Default: Nosetests)
 
