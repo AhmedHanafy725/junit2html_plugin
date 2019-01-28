@@ -3,7 +3,7 @@ This is a plugin to nosetests. convert nosetests report to html
 
 ### Installation
 ```bash
-pip install git+https://github.com/AhmedHanafy725/junit2html_plugin
+pip3 install git+https://github.com/AhmedHanafy725/junit2html_plugin
 ```
 ### Usage:
 `--with-html` used to enable the plugin.
